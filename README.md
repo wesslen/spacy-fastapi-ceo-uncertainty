@@ -1,9 +1,23 @@
 # spacy-fastapi-ceo-uncertainty
 
-First run the server:
+
+
+First run the server. This can be done with:
 
 ```
 uvicorn main:app --reload
+```
+
+Or running Docker, first by building:
+
+```
+docker build -t fastapi_app .
+```
+
+Then running:
+
+```
+docker run -p 8000:8000 fastapi_app
 ```
 
 In a new terminal:
