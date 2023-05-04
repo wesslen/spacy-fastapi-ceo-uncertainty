@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+# from pydantic import BaseModel
 import spacy
 from spacy.matcher import Matcher
 
@@ -8,14 +10,14 @@ nlp = spacy.load("en_core_web_sm")
 matcher = Matcher(nlp.vocab)
 
 # Define a Pydantic model for the request body
-class TextInput(BaseModel):
-    text: str
+# class TextInput(BaseModel):
+#     text: str
 
-@app.post("/score_text")
-def score_text(text_input: TextInput):
+@app.get("/score_text")
+def score_text(text_input):
     """Endpoint to score text for uncertain statements using spaCy Matcher."""
     # Load the text into spaCy's nlp object
-    doc = nlp(text_input.text)
+    doc = nlp(text_input)
 
     # Define spaCy Matcher patterns for uncertain statements
     pattern1 = [{"IS_ALPHA": True, "OP": "?"}, {"ORTH": "may"}, {"IS_ALPHA": True, "OP": "?"}]
@@ -36,3 +38,9 @@ def score_text(text_input: TextInput):
 
     # Return the score
     return {"score": score, "uncertain_statements": uncertain_statements}
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
+@app.get("/")
+def index() -> FileResponse:
+    return FileResponse(path="/app/static/index.html", media_type="text/html")
